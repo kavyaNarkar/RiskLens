@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskLens | Cyber Security Scanner</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-shield-virus"></i>
+                <h1>RiskLens</h1>
+            </div>
+            <p class="tagline">Advanced Threat Detection & Risk Visualization</p>
+        </header>
+
+        <div class="scan-section glass-panel">
+            <div class="input-group">
+                <i class="fa-solid fa-globe input-icon"></i>
+                <input type="text" id="urlInput" placeholder="Enter target URL (e.g., https://example.com)">
+            </div>
+            <button onclick="startScan()" class="cyber-btn">
+                <span class="btn-text">INITIATE SCAN</span>
+                <span class="btn-glitch"></span>
+            </button>
+        </div>
+
+        <div id="resultSection" class="hidden">
+            <div class="dashboard-grid">
+                <!-- Score Card -->
+                <div class="card score-card glass-panel">
+                    <h2>Risk Score</h2>
+                    <div class="score-circle">
+                        <span id="riskScore">--</span>
+                    </div>
+                    <span id="riskLevel" class="badge">--</span>
+                </div>
+
+                <!-- Charts -->
+                <div class="card chart-card glass-panel">
+                    <h3>Vulnerability Severity</h3>
+                    <div class="chart-container">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card chart-card glass-panel">
+                    <h3>Issue Categories</h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Vulnerability Table -->
+            <div class="card table-card glass-panel">
+                <h3><i class="fa-solid fa-bug"></i> Detected Vulnerabilities</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Issue Type</th>
+                                <th>Severity</th>
+                                <th>Attack Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vulnTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="card history-card glass-panel">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Scan History</h3>
+                <div class="chart-container">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
