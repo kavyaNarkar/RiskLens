@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskLens | Enter the Matrix</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Interactive Elements -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <div class="interactive-bg"></div>
+
+    <!-- Preloader -->
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="cyber-spinner"></div>
+        </div>
+    </div>
+
+    <div class="bg-grid"></div>
+    <!-- <div class="bg-glow"></div> -->
+
+    <!-- Navbar -->
+    <!-- Navigation Elements -->
+    <div class="logo hidden-content">
+        <i class="fa-solid fa-shield-virus"></i> <span class="logo-text">RiskLens</span>
+    </div>
+
+    <a href="#solutions" class="nav-cta hidden-content" style="display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-layer-group"></i> RiskLens Hub
+    </a>
+
+    <nav class="navbar hidden-content">
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#solutions">Solutions</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section hidden-content">
+        <div class="hero-content">
+            <h1>Securing the <br> <span class="highlight">Digital Future</span></h1>
+            <p>Advanced risk assessment and vulnerability landscape visualization for the modern enterprise.</p>
+            <div class="hero-btns">
+                <a href="#solutions" class="btn btn-primary">Explore Solutions</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-num">99.9%</span>
+                    <span class="stat-label">Uptime</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">24/7</span>
+                    <span class="stat-label">Monitoring</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">Global</span>
+                    <span class="stat-label">Coverage</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="visual-circle"></div>
+            <i class="fa-solid fa-shield-halved hero-icon"></i>
+
+            <!-- Floating Elements -->
+            <div class="floating-card card-1">
+                <div class="fc-icon"><i class="fa-solid fa-check"></i></div>
+                <div class="fc-text">
+                    <span class="fc-label">System Status</span>
+                    <span class="fc-value">Secure</span>
+                </div>
+            </div>
+
+            <div class="floating-card card-2">
+                <div class="fc-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="fc-text">
+                    <span class="fc-label">Threats Blocked</span>
+                    <span class="fc-value">1,240+</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Features Section -->
+    <section id="features" class="features-section hidden-content">
+        <div class="features-header">
+            <h2>Redefining <span class="highlight">Security</span></h2>
+            <p>Experience the next generation of vulnerability management.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Intelligent Risk Scoring</h3>
+                <p>Automated calculation of precise risk scores based on detected vulnerabilities, severity levels, and
+                    configuration issues.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                <h3>Passive Security Analysis</h3>
+                <p>Non-intrusive scanning of HTTP headers, SSL certificates, and public configurations without active
+                    exploitation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-file-shield"></i></div>
+                <h3>Compliance Benchmarking</h3>
+                <p>Evaluate your website's security posture against industry standards and generate compliance scores.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-bug"></i></div>
+                <h3>Vulnerability Insights</h3>
+                <p>Detailed breakdown of specific security gaps, including missing headers and weak configurations, with
+                    remediation advice.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <h3>Scan History Tracking</h3>
+                <p>Maintain a comprehensive history of past scans to monitor security improvements over time.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fa-solid fa-file-pdf"></i></div>
+                <h3>Exportable PDF Reports</h3>
+                <p>Generate professional, downloadable PDF reports summarizing findings, risk scores, and compliance
+                    status for stakeholders.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section hidden-content">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Behind the <span class="highlight">Shield</span></h2>
+                <p class="mission-text">At RiskLens, we believe that security should be intuitive, not intimidating. Our
+                    mission is to demystify cyber threats through advanced visualization and AI.</p>
+                <div class="about-stats">
+                    <div class="as-item">
+                        <span class="as-num">500+</span>
+                        <span class="as-label">Enterprise Clients</span>
+                    </div>
+                    <div class="as-item">
+                        <span class="as-num">10M+</span>
+                        <span class="as-label">Threats Neutralized</span>
+                    </div>
+                </div>
+            </div>
+            <div class="about-visual">
+                <div class="code-block">
+                    <div class="cb-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="cb-content">
+                        <span class="code-line"><span class="c-purple">const</span> <span
+                                class="c-blue">secureFuture</span> = <span class="c-purple">async</span> () => {</span>
+                        <span class="code-line indent"> <span class="c-purple">await</span> <span
+                                class="c-yellow">assessRisk</span>(system);</span>
+                        <span class="code-line indent"> <span class="c-purple">return</span> <span
+                                class="c-green">"Protected"</span>;</span>
+                        <span class="code-line">}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions / MVPs Section Restyled -->
+    <section id="solutions" class="features-section hidden-content">
+        <div class="features-header">
+            <h2>Two MVPs. <span class="highlight">One Mission.</span></h2>
+            <p>RiskLens is divided into two specialized applications to serve different needs.</p>
+        </div>
+
+        <div class="features-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; max-width: 1000px; margin: 0 auto;">
+
+            <!-- MVP 1: Standard Scanner -->
+            <div class="feature-card" style="text-align: center; display: flex; flex-direction: column;">
+                <div class="icon-box" style="margin: 0 auto 1.5rem;"><i class="fa-solid fa-radar"
+                        style="font-size: 2.5rem;"></i></div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Standard Scanner</h3>
+                <p
+                    style="margin-bottom: 2rem; color: var(--text-muted); line-height: 1.6; min-height: 90px; text-align: left;">
+                    Built for
+                    individuals, developers, and quick security audits. Instantly scan any public URL without an
+                    account. Get immediate risk scoring, vulnerability mapping, and exportable PDF reports in seconds.
+                </p>
+                <div
+                    style="background: var(--accent); border-radius: 8px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 2.5rem; text-align: left;">
+                    <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-main); font-size: 0.95rem;">
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--primary); margin-right: 12px; margin-top: 4px;"></i> No Registration
+                            Required
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--primary); margin-right: 12px; margin-top: 4px;"></i> Single-URL
+                            Instant Analysis
+                        </li>
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--primary); margin-right: 12px; margin-top: 4px;"></i> Deep Visual
+                            Risk Reporting
+                        </li>
+                    </ul>
+                </div>
+                <div style="margin-top: auto;">
+                    <a href="../index.html" class="btn btn-primary"
+                        style="display: inline-block; width: 100%; border: none;">ACCESS SCANNER</a>
+                </div>
+            </div>
+
+            <!-- MVP 2: Enterprise Dashboard -->
+            <div class="feature-card"
+                style="text-align: center; display: flex; flex-direction: column; position: relative;">
+                <div class="icon-box"
+                    style="margin: 0 auto 1.5rem; background: rgba(0,0,0,0.05); color: var(--secondary);">
+                    <i class="fa-solid fa-building-shield" style="font-size: 2.5rem;"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Enterprise Admin</h3>
+                <p
+                    style="margin-bottom: 2rem; color: var(--text-muted); line-height: 1.6; min-height: 90px; text-align: left;">
+                    Designed
+                    for DevSecOps teams managing multiple assets. A private, authenticated dashboard providing
+                    continuous monitoring, automated historical trend mapping, and live threat alerts.</p>
+                <div
+                    style="background: var(--accent); border-radius: 8px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 2.5rem; text-align: left;">
+                    <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-main); font-size: 0.95rem;">
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--secondary); margin-right: 12px; margin-top: 4px;"></i> Secure
+                            Authentication Gateway
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--secondary); margin-right: 12px; margin-top: 4px;"></i> Multi-Project
+                            Monitoring
+                        </li>
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fa-solid fa-check"
+                                style="color: var(--secondary); margin-right: 12px; margin-top: 4px;"></i> Automated
+                            Sync & Export
+                        </li>
+                    </ul>
+                </div>
+                <div style="margin-top: auto;">
+                    <a href="../enterprise/login.html" class="btn btn-secondary"
+                        style="display: inline-block; width: 100%; border: 1px solid var(--border);">ENTERPRISE
+                        LOGIN</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- App Tour Section -->
+    <section id="tour" class="tour-section hidden-content">
+        <div class="tour-header">
+            <h2>Master the <span class="highlight">Console</span></h2>
+            <p>From URL entry to actionable insights in three simple steps.</p>
+        </div>
+
+        <div class="tour-steps">
+            <!-- Step 1 -->
+            <div class="tour-step">
+                <div class="step-icon"><i class="fa-solid fa-globe"></i></div>
+                <div class="step-content">
+                    <h3>1. Input Target</h3>
+                    <p>Enter the URL of the web application you wish to scan. The system validates the endpoint
+                        instantly.</p>
+                </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="step-connector">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="tour-step">
+                <div class="step-icon"><i class="fa-solid fa-microchip"></i></div>
+                <div class="step-content">
+                    <h3>2. Analysis</h3>
+                    <p>Our AI scans for vulnerabilities, calculating a precise Risk Score based on CVSS standards.</p>
+                </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="step-connector">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="tour-step">
+                <div class="step-icon"><i class="fa-solid fa-chart-column"></i></div>
+                <div class="step-content">
+                    <h3>3. Insights</h3>
+                    <p>Explore interactive charts categorized by severity and type to pinpoint critical weaknesses.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Creative Section: Live Risk Feed -->
+    <!-- Creative Section: Cyber Security Insights -->
+    <section id="insights" class="insights-section hidden-content">
+        <div class="insight-container">
+            <div class="insight-header">
+                <div class="insight-title"><i class="fa-solid fa-lightbulb"></i> CYBER SECURITY INSIGHTS</div>
+                <div class="insight-status"><span class="blink-dot"></span> DAILY STARTING</div>
+            </div>
+            <div class="insight-window" id="insightWindow">
+                <div class="insight-content" id="insightContent">
+                    <span class="insight-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <p class="insight-text" id="insightText">Loading security knowledge...</p>
+                </div>
+                <div class="insight-progress-bar">
+                    <div class="ip-bar" id="insightProgress"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Contact Section -->
+    <section id="contact" class="mission-hub-section hidden-content">
+        <div class="mission-content">
+            <h2>Start with <span class="highlight">RiskLens</span></h2>
+            <p class="mission-statement">We are constantly evolving. Help us shape the future of cyber security.</p>
+
+            <div class="mission-actions">
+                <a href="mailto:collab@risklens.com?subject=Collaboration Proposal" class="mission-pill">
+                    <i class="fa-solid fa-handshake"></i>
+                    <span>Partner with Us</span>
+                </a>
+
+                <a href="mailto:feedback@risklens.com?subject=Product Suggestion" class="mission-pill">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Share Ideas</span>
+                </a>
+
+                <a href="mailto:support@risklens.com?subject=Report an Issue" class="mission-pill">
+                    <i class="fa-solid fa-bug"></i>
+                    <span>Report Issue</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer hidden-content">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-virus"></i> RiskLens
+            </div>
+            <div class="footer-links">
+                <a href="../others/privacy_policy.html" target="_blank">Privacy Policy</a>
+                <a href="../others/terms_conditions.html" target="_blank">Terms of Service</a>
+                <a href="#">Contact Support</a>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 RiskLens Security Systems. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

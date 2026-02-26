@@ -27,27 +27,38 @@
 
     <div class="container">
         <header>
+            <a href="landingpage/index.html" class="home-link">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
             <div class="logo">
                 <i class="fa-solid fa-shield-virus"></i>
                 <h1>RiskLens</h1>
             </div>
-            <p class="tagline">Advanced Threat Detection & Risk Visualization</p>
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                <p class="tagline">Advanced Threat Detection</p>
+            </div>
         </header>
 
+        <!-- Scan Section -->
         <div class="scan-section glass-panel">
             <div class="input-group">
                 <i class="fa-solid fa-globe input-icon"></i>
                 <input type="text" id="urlInput" placeholder="Enter target URL (e.g., https://example.com)">
             </div>
-            <button onclick="startScan()" class="cyber-btn">
-                <span class="btn-text">INITIATE SCAN</span>
-                <span class="btn-glitch"></span>
+            <button onclick="startScan()" class="cyber-btn" id="scanBtn">
+                <div class="btn-content">
+                    <span class="btn-text" id="btnText">INITIATE SCAN</span>
+                    <span class="btn-glitch"></span>
+                </div>
             </button>
         </div>
 
+        <!-- Results Section -->
         <div id="resultSection" class="hidden">
+
             <div class="dashboard-grid">
-                <!-- Score Card -->
+
+                <!-- Risk Score Card -->
                 <div class="card score-card glass-panel">
                     <h2>Risk Score</h2>
                     <div class="score-circle">
@@ -56,22 +67,49 @@
                     <span id="riskLevel" class="badge">--</span>
                 </div>
 
-                <!-- Charts -->
-                <div class="card chart-card glass-panel">
-                    <h3>Vulnerability Severity</h3>
-                    <div class="chart-container">
-                        <canvas id="severityChart"></canvas>
+                <!-- Compliance Score Card -->
+                <div class="card score-card glass-panel">
+                    <h2>Compliance Score</h2>
+                    <div class="score-circle" id="complianceCircle">
+                        <span id="complianceScore">--</span>
                     </div>
+                    <span id="complianceBadge" class="badge">DPDP Alignment</span>
                 </div>
 
+                <!-- Category Chart -->
                 <div class="card chart-card glass-panel">
                     <h3>Issue Categories</h3>
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Severity Chart -->
+                <div class="card chart-card glass-panel col-span-full">
+                    <h3>Vulnerability Severity</h3>
+                    <div class="chart-container">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
             </div>
 
+            <!-- Executive Summary -->
+            <div class="card glass-panel executive-card">
+                <h3><i class="fa-solid fa-chart-line"></i> Executive Summary</h3>
+                <p id="executiveSummary" style="color: #94a3b8; line-height: 1.6;">
+                    Scan results summary will appear here.
+                </p>
+            </div>
+
+
+            <!-- Download PDF Button -->
+            <div style="text-align: right; margin-bottom: 15px;">
+                <button onclick="downloadReport()" class="cyber-btn">
+                    <span class="btn-text">DOWNLOAD PDF REPORT</span>
+                    <span class="btn-glitch"></span>
+                </button>
+            </div>
 
             <!-- Vulnerability Table -->
             <div class="card table-card glass-panel">
@@ -83,6 +121,8 @@
                                 <th>Issue Type</th>
                                 <th>Severity</th>
                                 <th>Attack Type</th>
+                                <th>Priority</th>
+                                <th>Remediation</th>
                             </tr>
                         </thead>
                         <tbody id="vulnTable"></tbody>
@@ -90,14 +130,26 @@
                 </div>
             </div>
 
-            <!-- History -->
+            <!-- Scan History -->
             <div class="card history-card glass-panel">
                 <h3><i class="fa-solid fa-clock-rotate-left"></i> Scan History</h3>
                 <div class="chart-container">
                     <canvas id="historyChart"></canvas>
                 </div>
             </div>
+
         </div>
+
+        <footer class="glass-panel" style="margin-top: 3rem; border-radius: 12px;">
+            <a href="others/privacy_policy.html" target="_blank">
+                <i class="fa-solid fa-lock"></i> Privacy Policy
+            </a>
+            <span style="color: rgba(255, 255, 255, 0.3);">|</span>
+            <a href="others/terms_conditions.html" target="_blank">
+                <i class="fa-solid fa-file-contract"></i> Terms & Conditions
+            </a>
+        </footer>
+
     </div>
 
     <script src="script.js"></script>

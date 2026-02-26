@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskLens Enterprise - Vulnerability Library</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css?v=3">
+    <link rel="stylesheet" href="enterprise.css?v=3">
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar glass-panel">
+            <div class="brand">
+                <i class="fa-solid fa-shield-virus"></i>
+                <h2>RiskLens<br><span>ENTERPRISE</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fa-solid fa-border-all"></i> Dashboard</a>
+                <a href="dashboard.html"><i class="fa-solid fa-layer-group"></i> Projects</a>
+                <a href="library.html" class="active"><i class="fa-solid fa-book-journal-whills"></i> Vuln Library</a>
+                <a href="dashboard.html"><i class="fa-solid fa-file-shield"></i> Reports</a>
+                <a href="dashboard.html"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="cyber-btn sm-btn">
+                    <span class="btn-text"><i class="fa-solid fa-right-from-bracket"></i> LOGOUT</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header glass-panel">
+                <div style="display: flex; gap: 1rem; align-items: center; width: 100%; max-width: 600px;">
+                    <div class="search-bar" style="flex-grow: 1; margin: 0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="librarySearch" placeholder="Search vulnerabilities..."
+                            oninput="filterLibrary()">
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0, 243, 255, 0.05); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(0, 243, 255, 0.2); white-space: nowrap;">
+                        <span style="font-size: 0.85rem; color: var(--primary); font-weight: 500;"><i
+                                class="fa-solid fa-filter"></i> My Projects Only</span>
+                        <label class="switch" for="myVulnsToggle">
+                            <input type="checkbox" id="myVulnsToggle" onchange="filterLibrary()" checked
+                                style="opacity: 0; width: 0; height: 0; position: absolute; cursor: pointer;">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="name">SysAdmin</span>
+                        <span class="role">Enterprise Level</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="header-action" style="margin-bottom: 2rem;">
+                    <h1>Vulnerability Explanation Library</h1>
+                    <p class="text-muted">Educational insights and remediation strategies for commonly detected threats.
+                    </p>
+                </div>
+
+                <div id="libraryContainer" class="library-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem;">
+                    <div class="loading-state" style="grid-column: 1 / -1;">
+                        <div class="cyber-spinner"></div> Fetching intelligence library...
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000/enterprise";
+        let libraryData = [];
+
+        async function loadLibrary() {
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/library`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem("access_token");
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    throw new Error("Failed to fetch library");
+                }
+
+                const data = await response.json();
+                libraryData = data.library;
+                // Render with initial filter logic to respect the default checked toggle
+                filterLibrary();
+            } catch (err) {
+                console.error(err);
+                document.getElementById("libraryContainer").innerHTML = '<div class="empty-state">Failed to load library database.</div>';
+            }
+        }
+
+        function renderLibrary(issues) {
+            const container = document.getElementById("libraryContainer");
+            container.innerHTML = "";
+
+            if (issues.length === 0) {
+                container.innerHTML = '<div class="empty-state">No vulnerabilities match your search.</div>';
+                return;
+            }
+
+            issues.forEach(issue => {
+                const severityLower = issue.severity.toLowerCase();
+                const severityColorClass = issue.severity === 'Critical' ? 'danger' : issue.severity === 'High' ? 'danger' : issue.severity === 'Medium' ? 'warning' : 'success';
+
+                let affectedHtml = '';
+                if (issue.affected_domains && issue.affected_domains.length > 0) {
+                    const domainsList = issue.affected_domains.map(d => `<span class="badge-sm" style="background: rgba(255, 0, 85, 0.2); color: #fff; border: 1px solid var(--danger); font-size: 0.75rem;"><i class="fa-solid fa-globe"></i> ${d}</span>`).join(' ');
+                    affectedHtml = `
+                        <div style="margin-top: 0.5rem; padding: 0.8rem; background: rgba(255, 0, 85, 0.05); border-radius: 6px; border-left: 3px solid var(--danger);">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;"><i class="fa-solid fa-triangle-exclamation text-danger"></i> Currently Detected Action Required:</span>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">${domainsList}</div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="card glass-panel" style="display: flex; flex-direction: column; gap: 1rem; border-top: 3px solid var(--${severityColorClass}); ${issue.affected_domains && issue.affected_domains.length > 0 ? 'box-shadow: 0 0 20px rgba(255, 0, 85, 0.15);' : ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h3 style="color: #fff; margin: 0; font-size: 1.2rem;">${issue.name}</h3>
+                            <span class="badge-sm text-${severityColorClass}">${issue.severity}</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--primary);">
+                            <i class="fa-solid fa-tag"></i> ${issue.category}
+                        </div>
+                        ${affectedHtml}
+                        <div>
+                            <strong style="color: #e0e0e0;">Description:</strong>
+                            <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.3rem;">${issue.description}</p>
+                        </div>
+                        <div>
+                            <strong style="color: var(--danger);">Business Impact:</strong>
+                            <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.3rem;">${issue.impact}</p>
+                        </div>
+                        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <strong style="color: var(--success);"><i class="fa-solid fa-screwdriver-wrench"></i> Remediation:</strong>
+                            <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.3rem;">${issue.remediation}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterLibrary() {
+            const query = document.getElementById("librarySearch").value.toLowerCase();
+            const myVulnsOnly = document.getElementById("myVulnsToggle").checked;
+
+            const filtered = libraryData.filter(issue => {
+                const matchesSearch = issue.name.toLowerCase().includes(query) ||
+                    issue.category.toLowerCase().includes(query) ||
+                    issue.description.toLowerCase().includes(query);
+
+                const matchesToggle = myVulnsOnly ? (issue.affected_domains && issue.affected_domains.length > 0) : true;
+
+                return matchesSearch && matchesToggle;
+            });
+            renderLibrary(filtered);
+        }
+
+        function logout() {
+            localStorage.removeItem("access_token");
+            window.location.href = "login.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", loadLibrary);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskLens Enterprise Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../style.css?v=3">
+    <link rel="stylesheet" href="enterprise.css?v=3">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="brand">
+                <i class="fa-solid fa-shield-virus"></i>
+                <h2>RiskLens<br><span>ENTERPRISE</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" id="nav-dashboard" class="active" onclick="switchNav('dashboard')"><i
+                        class="fa-solid fa-border-all"></i> Dashboard</a>
+                <a href="#" id="nav-projects" onclick="switchNav('projects')"><i class="fa-solid fa-layer-group"></i>
+                    Projects</a>
+                <a href="library.html"><i class="fa-solid fa-book-journal-whills"></i> Vuln Library</a>
+                <a href="#" id="nav-reports" onclick="switchNav('reports')"><i class="fa-solid fa-file-shield"></i>
+                    Reports</a>
+                <a href="#" id="nav-settings" onclick="switchNav('settings')"><i class="fa-solid fa-gear"></i>
+                    Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="cyber-btn sm-btn">
+                    <span class="btn-text"><i class="fa-solid fa-right-from-bracket"></i> LOGOUT</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header glass-panel">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search projects...">
+                </div>
+                <div class="header-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div class="notification-bell" onclick="toggleAlertDrawer()"
+                        style="position: relative; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; transition: color 0.3s ease;">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="alertBadge" class="badge-sm bg-danger"
+                            style="position: absolute; top: -8px; right: -10px; font-size: 0.6rem; padding: 0.2rem 0.4rem; border-radius: 50%; display: none;">0</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                        <div class="user-info">
+                            <span class="name">SysAdmin</span>
+                            <span class="role">Enterprise Level</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Agent Health Top Bar -->
+            <div class="health-bar glass-panel"
+                style="margin: 1rem 2rem 0 2rem; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-color: rgba(0, 255, 136, 0.3);">
+                <div style="display: flex; gap: 2rem;">
+                    <span style="color: var(--text-main); font-size: 0.9rem;"><i
+                            class="fa-solid fa-server text-success"></i> API Status: <span
+                            class="text-success fw-bold">Online</span></span>
+                    <span style="color: var(--text-main); font-size: 0.9rem;"><i
+                            class="fa-solid fa-network-wired text-primary"></i> Scanner Nodes: 4/4 Active</span>
+                    <span style="color: var(--text-main); font-size: 0.9rem;"><i
+                            class="fa-solid fa-layer-group text-warning"></i> Queue: 0 Tasks</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                    Last checked: Just now
+                </div>
+            </div>
+
+            <div class="content-body" style="padding-top: 1rem;">
+                <div class="header-action"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1>Enterprise Overview</h1>
+                    <div class="action-buttons" style="display: flex; gap: 1rem;">
+                        <button onclick="loadDashboard()" class="cyber-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                            <span class="btn-text"><i class="fa-solid fa-arrows-rotate"></i> SYNC</span>
+                        </button>
+                        <button onclick="exportCSV()" class="cyber-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.85rem; border-color: var(--secondary);">
+                            <span class="btn-text" style="color: var(--secondary);"><i class="fa-solid fa-download"></i>
+                                EXPORT REPORT</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD CARDS -->
+                <div class="dashboard-grid cards-overview">
+                    <div class="card stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Projects</h3>
+                            <p id="totalProjects" class="stat-value">--</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-eye"></i></div>
+                        <div class="stat-details">
+                            <h3>Monitored</h3>
+                            <p id="monitoredProjects" class="stat-value text-success">--</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-star-half-stroke"></i></div>
+                        <div class="stat-details">
+                            <h3>Avg Risk Score</h3>
+                            <p id="averageScore" class="stat-value">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard View -->
+                <div id="dashboardView" class="main-grid">
+                    <div class="left-col">
+                        <!-- Projects Section -->
+                        <div class="card projects-card glass-panel section-card">
+                            <div class="section-header">
+                                <h3><i class="fa-solid fa-folder-open text-primary"></i> Projects Monitor</h3>
+                                <p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Manage targets,
+                                    configure scan frequencies, and execute ops.</p>
+                            </div>
+                            <!-- ADD PROJECT removed from dashboard view -->
+
+                            <div class="projects-list-container">
+                                <div class="project-list-target project-list">
+                                    <div class="loading-state">
+                                        <div class="cyber-spinner"></div> Loading target matrix...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Critical Vulnerabilities Triage Section -->
+                        <div class="card triage-card glass-panel section-card">
+                            <div class="section-header" style="border-bottom-color: rgba(255, 0, 85, 0.3);">
+                                <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Global Triage Action
+                                </h3>
+                            </div>
+                            <div class="triage-table-container">
+                                <table class="cyber-table"
+                                    style="width: 100%; text-align: left; border-collapse: collapse;">
+                                    <thead>
+                                        <tr
+                                            style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 0.85rem;">
+                                            <th style="padding: 1rem 0;">Vulnerability</th>
+                                            <th>Target Domain</th>
+                                            <th>Severity</th>
+                                            <th style="text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="globalTriageList">
+                                        <tr style="border-bottom: 1px dashed rgba(255, 255, 255, 0.05);">
+                                            <td style="padding: 1rem 0; color: #fff; font-weight: 500;">SQL Injection
+                                                (Blind)</td>
+                                            <td><span class="text-muted"><i class="fa-solid fa-globe"></i>
+                                                    chatgpt.com</span></td>
+                                            <td><span class="badge-sm bg-danger" style="color:white;">Critical</span>
+                                            </td>
+                                            <td style="text-align: right;"><button class="cyber-btn"
+                                                    style="padding: 0.4rem 0.8rem; font-size: 0.75rem;"><span
+                                                        class="btn-text">FIX NOW</span></button></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px dashed rgba(255, 255, 255, 0.05);">
+                                            <td style="padding: 1rem 0; color: #fff; font-weight: 500;">Missing Security
+                                                Headers</td>
+                                            <td><span class="text-muted"><i class="fa-solid fa-globe"></i>
+                                                    example.com</span></td>
+                                            <td><span class="badge-sm bg-warning" style="color:white;">High</span></td>
+                                            <td style="text-align: right;"><button class="cyber-btn"
+                                                    style="padding: 0.4rem 0.8rem; font-size: 0.75rem;"><span
+                                                        class="btn-text">FIX NOW</span></button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Trend Chart -->
+                        <div class="card trend-card glass-panel section-card" id="trendSection" style="display:none;">
+                            <div class="section-header">
+                                <h3><i class="fa-solid fa-chart-area"></i> Project Trend</h3>
+                                <span id="trendProjectName" class="text-muted" style="font-size: 0.9rem;"></span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Risk Prediction Engine -->
+                        <div class="card prediction-card glass-panel section-card" id="predictionSection"
+                            style="display:none; margin-top: 1.5rem;">
+                            <div class="section-header">
+                                <h3><i class="fa-solid fa-crystal-ball text-warning"></i> Risk Projection (30 Days)</h3>
+                            </div>
+                            <div class="prediction-content" style="text-align: center; padding: 1.5rem 0;">
+                                <div class="projected-score">
+                                    <span class="score-value" id="projectedScoreValue">--</span>
+                                </div>
+                                <div class="projected-status" id="projectedStatusText"
+                                    style="margin-top: 1rem; font-weight: 500;">
+                                    Analyzing trajectory...
+                                </div>
+                                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Based on
+                                    historical scan velocity.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Status -->
+                    <div class="card compliance-card glass-panel section-card" style="margin-bottom: 2rem;">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-scale-balanced text-primary"></i> Framework Compliance</h3>
+                        </div>
+                        <div class="compliance-ring-container"
+                            style="display: flex; justify-content: space-around; padding: 1rem 0;">
+                            <div style="text-align: center;">
+                                <div class="progress-ring" style="--progress: 85; --ring-color: var(--success);">
+                                    <div class="ring-content">85<span>%</span></div>
+                                </div>
+                                <p style="margin-top: 1rem; font-weight: 600; color: #fff;">GDPR</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div class="progress-ring" style="--progress: 60; --ring-color: var(--warning);">
+                                    <div class="ring-content">60<span>%</span></div>
+                                </div>
+                                <p style="margin-top: 1rem; font-weight: 600; color: #fff;">DPDP</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan Schedule -->
+                    <div class="card schedule-card glass-panel section-card" style="margin-bottom: 2rem;">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-calendar-days" style="color: var(--secondary);"></i> Upcoming
+                                Scans</h3>
+                        </div>
+                        <div class="schedule-timeline">
+                            <div class="timeline-item">
+                                <div class="time-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="time">Today, 23:00</div>
+                                    <div class="task">Deep Scan: chatgpt.com</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="time-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="time">Tomorrow, 02:00</div>
+                                    <div class="task">Quick Check: example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Section -->
+                    <div class="card alerts-card glass-panel section-card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Active Alerts</h3>
+                        </div>
+                        <div id="alertList" class="alert-list">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div> Fetching alerts...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects View (Hidden deeply via Sidebar) -->
+            <div id="projectsView" style="display: none; padding-top: 2rem;">
+                <div class="card projects-card glass-panel section-card">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-folder-open text-primary"></i> Projects Directory</h3>
+                        <p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Register new target domains
+                            and execute remote monitoring tasks.</p>
+                    </div>
+
+                    <!-- ADD PROJECT (Only shown here) -->
+                    <div class="add-project-box">
+                        <h4>Register Target Domain</h4>
+                        <div class="form-group flex-group">
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-link input-icon"></i>
+                                <input type="text" class="domain-input" placeholder="https://yourwebsite.com">
+                            </div>
+                            <div class="select-wrapper">
+                                <select class="frequency-input">
+                                    <option value="weekly">Weekly Scan</option>
+                                    <option value="daily">Daily Scan</option>
+                                </select>
+                            </div>
+                            <button onclick="createProject(this)" class="cyber-btn createProjBtn"
+                                style="min-width: 150px;">
+                                <div class="btn-content">
+                                    <span class="btn-text">REGISTER</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="projects-list-container">
+                        <div class="project-list-target project-list">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div> Loading target matrix...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div id="reportsView" style="display: none; padding-top: 2rem;">
+                <div class="card reports-card glass-panel section-card">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-file-shield text-primary"></i> Executive Reports</h3>
+                        <p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Generate and download PDF
+                            audit reports for all monitored targets.</p>
+                    </div>
+                    <div class="reports-list-container">
+                        <div id="reportsList" class="reports-list">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div> Loading available reports...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settingsView" style="display: none; padding-top: 2rem;">
+                <div class="card settings-card glass-panel section-card">
+                    <div class="section-header" style="margin-bottom: 2rem;">
+                        <h3><i class="fa-solid fa-sliders text-success"></i> Enterprise Configuration</h3>
+                        <p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Manage global scan
+                            directives, API access, and system preferences.</p>
+                    </div>
+
+                    <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Scan Configuration -->
+                        <div class="settings-group"
+                            style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <h4 style="color: var(--primary); margin-bottom: 1rem;"><i class="fa-solid fa-radar"></i>
+                                Global Scan Parameters</h4>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label
+                                    style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Default
+                                    Scan Depth</label>
+                                <select class="cyber-select" style="width: 100%;" id="settingsScanDepth">
+                                    <option value="quick">Quick Discovery</option>
+                                    <option value="deep" selected>Deep Vulnerability Scan</option>
+                                    <option value="enterprise">Full Enterprise Audit</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label
+                                    style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                                    <span style="color: #fff; font-size: 0.85rem;">Auto-Escalate on Threat
+                                        Detection</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked id="settingsAutoEscalate"
+                                            style="opacity: 0; width: 0; height: 0; position: absolute; cursor: pointer;">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </label>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">
+                                    Automatically trigger an Enterprise scan if a Critical or High vulnerability is
+                                    detected during a Quick session.</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification Preferences -->
+                        <div class="settings-group"
+                            style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <h4 style="color: var(--warning); margin-bottom: 1rem;"><i class="fa-solid fa-bell"></i>
+                                Alert Routing</h4>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label
+                                    style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                                    <span style="color: #fff; font-size: 0.85rem;">Email Digest (Weekly)</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked id="settingsEmailDigest"
+                                            style="opacity: 0; width: 0; height: 0; position: absolute; cursor: pointer;">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Slack/Teams
+                                    Webhook URL</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="password" id="webhookInput" class="domain-input" value=""
+                                        style="flex: 1; padding: 0.5rem; font-size: 0.8rem; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); border-radius: 4px;"
+                                        disabled>
+                                    <button class="cyber-btn" onclick="editWebhook(this)" style="padding: 0 1rem;">
+                                        <span class="btn-text"><i class="fa-solid fa-pen"></i></span>
+                                    </button>
+                                </div>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">Push
+                                    critical alerts instantly to your SecOps channel.</p>
+                            </div>
+                        </div>
+
+                        <!-- Integration & API -->
+                        <div class="settings-group"
+                            style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); grid-column: 1 / -1;">
+                            <h4 style="color: var(--secondary); margin-bottom: 1rem;"><i class="fa-solid fa-key"></i>
+                                CI/CD Pipeline Integrations</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Use this
+                                Enterprise API key to trigger automated RiskLens scans directly from GitHub Actions,
+                                Jenkins, or GitLab CI.</p>
+
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <code
+                                    style="background: rgba(0,0,0,0.5); padding: 0.75rem 1rem; border-radius: 4px; border: 1px solid rgba(0, 243, 255, 0.3); color: var(--success); flex: 1; font-family: monospace; letter-spacing: 1px; font-size: 0.9rem;"
+                                    id="apiKeyDisplay">rl_ent_live_9a8b7c6d5e4f3g2h1j0k9l8m7n6p5q4r</code>
+                                <button class="cyber-btn" onclick="copyAPIKey(this)">
+                                    <span class="btn-text"><i class="fa-solid fa-copy"></i> COPY KEY</span>
+                                </button>
+                                <button class="cyber-btn" style="border-color: var(--danger);"
+                                    onclick="regenerateAPIKey(this)">
+                                    <span class="btn-text" style="color: var(--danger);"><i
+                                            class="fa-solid fa-rotate"></i> REGENERATE</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: right;">
+                        <button class="cyber-btn" onclick="saveSettings(this)" style="padding: 0.8rem 2rem;">
+                            <span class="btn-text" style="font-size: 0.9rem;"><i class="fa-solid fa-floppy-disk"></i>
+                                SAVE CONFIGURATION</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Scan Insights -->
+            <div id="latestScanSection" style="display:none; margin-top:2rem;">
+                <div class="section-header"
+                    style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3><i class="fa-solid fa-radar"></i> Latest Scan Insights</h3>
+                        <span id="scanTargetName" class="text-muted" style="font-size: 0.9rem;"></span>
+                    </div>
+                    <div class="ceo-mode-toggle"
+                        style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0, 243, 255, 0.1); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--primary);">
+                        <span style="font-size: 0.85rem; font-weight: 500; color: var(--primary);"><i
+                                class="fa-solid fa-briefcase"></i> CEO MODE</span>
+                        <label class="switch" for="ceoModeToggle">
+                            <input type="checkbox" id="ceoModeToggle" onchange="toggleCeoMode()"
+                                style="opacity: 0; width: 0; height: 0; position: absolute; cursor: pointer;">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- CEO Mode Summary Panel -->
+                <div id="ceoExecutivePanel" class="card glass-panel"
+                    style="display: none; margin-bottom: 2rem; border-color: var(--warning);">
+
+                    <div class="ceo-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                        <!-- Executive Digest Container -->
+                        <div id="ceoExecutiveContent">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div> Analyzing Business Impact...
+                            </div>
+                        </div>
+
+                        <!-- Compliance Breakdown Container -->
+                        <div class="compliance-breakdown"
+                            style="padding-left: 2rem; border-left: 1px solid rgba(255,255,255,0.1);">
+                            <h4 style="color: var(--text-muted); margin-bottom: 1rem;"><i
+                                    class="fa-solid fa-scale-balanced"></i> Compliance Alignment</h4>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                    <span style="font-size: 0.85rem; color: #fff;">GDPR Readiness</span>
+                                    <span id="gdprScore"
+                                        style="font-size: 0.85rem; font-weight: bold; color: var(--success);">--/100</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div id="gdprBar" class="impact-bar bg-success" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                    <span style="font-size: 0.85rem; color: #fff;">DPDP Compliance</span>
+                                    <span id="dpdpScore"
+                                        style="font-size: 0.85rem; font-weight: bold; color: var(--success);">--/100</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div id="dpdpBar" class="impact-bar bg-success" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                    <span style="font-size: 0.85rem; color: #fff;">Cyber Hygiene</span>
+                                    <span id="hygieneScore"
+                                        style="font-size: 0.85rem; font-weight: bold; color: var(--success);">--/100</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div id="hygieneBar" class="impact-bar bg-success" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="technicalViewGrid" class="dashboard-grid"
+                    style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                    <!-- Hacker POV Panel -->
+                    <div class="card glass-panel hacker-panel">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--success);"><i
+                                class="fa-solid fa-user-secret"></i> Hacker POV</h3>
+                        <div class="hacker-terminal" id="hackerPovTerminal">
+                            <div class="terminal-line"><span class="cmd-prompt">root@risklens:~#</span> nmap -sV
+                                target</div>
+                            <div class="terminal-output" id="hackerPovOutput">
+                                Awaiting scan data...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attack Impact Simulator -->
+                    <div class="card glass-panel impact-panel">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--danger);"><i class="fa-solid fa-burst"></i>
+                            Attack Impact Simulator</h3>
+                        <div class="impact-metrics" id="attackImpactMetrics">
+                            <div class="impact-item">
+                                <div class="impact-header">
+                                    <span>Financial Loss Risk</span>
+                                    <span class="impact-level" id="impactFinancialText">--</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div class="impact-bar bg-success" id="impactFinancialBar" style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-header">
+                                    <span>Reputational Damage</span>
+                                    <span class="impact-level" id="impactReputationText">--</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div class="impact-bar bg-success" id="impactReputationBar" style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-header">
+                                    <span>Regulatory Fines</span>
+                                    <span class="impact-level" id="impactRegulatoryText">--</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div class="impact-bar bg-success" id="impactRegulatoryBar" style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-header">
+                                    <span>Operational Downtime</span>
+                                    <span class="impact-level" id="impactOperationalText">--</span>
+                                </div>
+                                <div class="impact-bar-container">
+                                    <div class="impact-bar bg-success" id="impactOperationalBar" style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Fix Recommendation Engine -->
+                    <div class="card glass-panel smart-fix-panel" style="grid-column: 1 / -1;">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary);"><i
+                                class="fa-solid fa-screwdriver-wrench"></i> Smart Fix Recommendations</h3>
+                        <p class="text-muted" style="margin-bottom: 1.5rem; font-size: 0.9rem;">Step-by-step
+                            remediation plans for the immediate critical vulnerabilities discovered.</p>
+                        <div class="smart-fix-container" id="smartFixList">
+                            <div class="loading-state">
+                                <div class="cyber-spinner"></div> Generating action plans...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </main>
+    </div>
+
+    <!-- Alert Drawer -->
+    <div id="alertDrawer" class="alert-drawer glass-panel">
+        <div class="drawer-header"
+            style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+            <h3 style="margin: 0; color: #fff;"><i class="fa-solid fa-bell text-warning"></i> Notifications</h3>
+            <button onclick="toggleAlertDrawer()" class="close-drawer-btn"
+                style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; transition: color 0.3s ease;"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="drawerAlertList" class="drawer-content" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="loading-state">
+                <div class="cyber-spinner"></div> Fetching alerts...
+            </div>
+        </div>
+    </div>
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleAlertDrawer()"></div>
+
+    <!-- Scripts -->
+    <script src="enterprise.js?v=4"></script>
+</body>
+
+</html>

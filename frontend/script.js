@@ -4,30 +4,33 @@ let historyChart;
 
 // Theme Colors
 const theme = {
-    primary: '#06b6d4',
-    secondary: '#ec4899',
-    accent: '#8b5cf6',
-    success: '#10b981',
-    warning: '#f59e0b',
-    danger: '#ef4444',
-    textMain: '#f8fafc',
-    textMuted: '#94a3b8',
+    primary: '#00f3ff',
+    secondary: '#ff00ea',
+    accent: '#7000ff',
+    success: '#00ff88',
+    warning: '#ffb300',
+    danger: '#ff0055',
+    textMain: '#f0f4f8',
+    textMuted: '#8b9bb4',
     gridColor: 'rgba(255, 255, 255, 0.1)'
 };
 
 async function startScan() {
     const urlInput = document.getElementById("urlInput");
-    const url = urlInput.value;
-    const btn = document.querySelector('.cyber-btn');
+    const url = urlInput.value.trim();
+    const btn = document.getElementById('scanBtn');
+    const btnText = document.getElementById('btnText');
 
     if (!url) {
-        alert("Please enter a URL.");
+        alert("Please enter a valid URL.");
+        urlInput.focus();
         return;
     }
 
-    // Loading State
-    btn.innerHTML = '<span class="btn-text">SCANNING...</span><span class="btn-glitch"></span>';
-    btn.style.opacity = '0.7';
+    // Prepare UI for loading state
+    btn.disabled = true;
+    btnText.innerHTML = '<div class="cyber-spinner"></div> SCANNING...';
+    btn.style.opacity = "0.7";
 
     try {
         const response = await fetch("http://localhost:8000/scan", {
@@ -36,131 +39,202 @@ async function startScan() {
             body: JSON.stringify({ url: url })
         });
 
+        if (!response.ok) throw new Error("Backend error processing scan");
+
         const data = await response.json();
+        window.lastScanData = data;
 
         document.getElementById("resultSection").classList.remove("hidden");
 
-        // Animate Score
-        animateScore(data.score);
+        // Risk Score
+        animateScore(data.score, "riskScore");
+        document.getElementById("riskLevel").innerText = data.level || "Unknown";
 
-        // Update Risk Level Badge
-        const level = data.level.toLowerCase();
-        const badge = document.getElementById("riskLevel");
-        const scoreCircle = document.querySelector('.score-circle');
+        // Dynamic Risk level styling
+        const riskCircle = document.getElementById("riskScore").parentElement;
+        riskCircle.className = "score-circle"; // Reset classes
+        if (data.score < 40) riskCircle.classList.add("safe");
+        else if (data.score < 70) riskCircle.classList.add("medium");
+        else riskCircle.classList.add("critical");
 
-        badge.innerText = data.level;
+        // Compliance Score
+        const complianceEl = document.getElementById("complianceScore");
+        const complianceCircle = document.getElementById("complianceCircle");
+        const complianceBadge = document.getElementById("complianceBadge");
 
-        // Reset classes
-        badge.className = "badge";
-        scoreCircle.classList.remove('safe', 'medium', 'critical');
+        if (data.compliance_score !== undefined) {
+            let score = data.compliance_score;
+            if (typeof score === "object" && score.overall !== undefined) {
+                score = score.overall;
+            }
 
-        if (level === 'low') {
-            badge.classList.add('bg-success');
-            scoreCircle.classList.add('safe');
-        } else if (level === 'medium') {
-            badge.classList.add('bg-warning');
-            scoreCircle.classList.add('medium');
-        } else {
-            badge.classList.add('bg-danger');
-            scoreCircle.classList.add('critical');
+            animateScore(score, "complianceScore");
+
+            complianceCircle.classList.remove("safe", "medium", "critical");
+            complianceBadge.classList.remove("bg-success", "bg-warning", "bg-danger");
+
+            if (score >= 80) {
+                complianceCircle.classList.add("safe");
+                complianceBadge.classList.add("bg-success");
+                complianceBadge.innerText = "Strong Compliance";
+            } else if (score >= 50) {
+                complianceCircle.classList.add("medium");
+                complianceBadge.classList.add("bg-warning");
+                complianceBadge.innerText = "Moderate Compliance";
+            } else {
+                complianceCircle.classList.add("critical");
+                complianceBadge.classList.add("bg-danger");
+                complianceBadge.innerText = "High Compliance Risk";
+            }
         }
 
-        renderTable(data.issues);
+        // Executive Summary
+        document.getElementById("executiveSummary").innerHTML = data.executive_summary || "No executive summary available for this scan.";
+
+        // Table
+        renderTable(data.issues || []);
+
+        // Charts
         renderCharts(data);
+
+        // History
         loadHistory();
 
     } catch (error) {
         console.error("Scan failed:", error);
-        alert("Scan failed. Please check the backend.");
+        alert("Scan failed. Ensure backend API is running and URL is accessible.");
     } finally {
-        btn.innerHTML = '<span class="btn-text">INITIATE SCAN</span><span class="btn-glitch"></span>';
-        btn.style.opacity = '1';
+        // Restore button state
+        btn.disabled = false;
+        btnText.innerHTML = 'INITIATE SCAN';
+        btn.style.opacity = "1";
     }
 }
 
-function animateScore(targetScore) {
-    const scoreEl = document.getElementById("riskScore");
+// Animate Risk Score
+function animateScore(targetScore, elementId) {
+    const scoreEl = document.getElementById(elementId);
     let currentScore = 0;
+
+    // Clear any existing interval on this element to prevent looping bugs
+    if (scoreEl.dataset.intervalId) {
+        clearInterval(parseInt(scoreEl.dataset.intervalId));
+    }
+
+    if (targetScore === 0) {
+        scoreEl.innerText = targetScore;
+        return;
+    }
+
     const interval = setInterval(() => {
         if (currentScore >= targetScore) {
             clearInterval(interval);
+            delete scoreEl.dataset.intervalId;
             scoreEl.innerText = targetScore;
         } else {
             currentScore++;
             scoreEl.innerText = currentScore;
         }
-    }, 20);
+    }, 15);
+
+    scoreEl.dataset.intervalId = interval;
 }
 
+// Render Table
 function renderTable(issues) {
     const table = document.getElementById("vulnTable");
     table.innerHTML = "";
 
-    issues.forEach(issue => {
-        let severityClass = '';
-        let icon = '';
+    if (issues.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--success); padding: 2rem;">No vulnerabilities found. System is secure!</td></tr>`;
+        return;
+    }
 
-        if (issue.severity === 'High') { severityClass = 'text-danger'; icon = '<i class="fa-solid fa-circle-exclamation"></i>'; }
-        else if (issue.severity === 'Medium') { severityClass = 'text-warning'; icon = '<i class="fa-solid fa-triangle-exclamation"></i>'; }
-        else { severityClass = 'text-success'; icon = '<i class="fa-solid fa-check-circle"></i>'; }
+    issues.forEach(issue => {
+        const severityClass = issue.severity === "Critical" ? "text-danger font-bold" :
+            issue.severity === "High" ? "text-warning font-bold" :
+                issue.severity === "Medium" ? "text-warning" : "text-success";
 
         const row = `<tr>
                         <td>${issue.name}</td>
-                        <td class="${severityClass}">${icon} ${issue.severity}</td>
-                        <td>${issue.attack_type}</td>
-
+                        <td class="${severityClass}">${issue.severity}</td>
+                        <td>${issue.attack_type || "N/A"}</td>
+                        <td>${issue.priority || "N/A"}</td>
+                        <td>${issue.remediation || "N/A"}</td>
                     </tr>`;
         table.innerHTML += row;
     });
 }
 
+// Render Charts
 function renderCharts(data) {
-    const severityCounts = {};
+    const severityCounts = { "Critical": 0, "High": 0, "Medium": 0, "Low": 0 };
     const categoryCounts = {};
 
-    data.issues.forEach(issue => {
-        severityCounts[issue.severity] = (severityCounts[issue.severity] || 0) + 1;
-        categoryCounts[issue.category] = (categoryCounts[issue.category] || 0) + 1;
+    (data.issues || []).forEach(issue => {
+        if (severityCounts[issue.severity] !== undefined) {
+            severityCounts[issue.severity]++;
+        } else {
+            severityCounts[issue.severity] = 1;
+        }
+        categoryCounts[issue.name] = (categoryCounts[issue.name] || 0) + 1;
     });
 
     Chart.defaults.color = theme.textMuted;
     Chart.defaults.borderColor = theme.gridColor;
+    Chart.defaults.font.family = theme.fontBody;
 
     if (severityChart) severityChart.destroy();
     if (categoryChart) categoryChart.destroy();
 
-    // Severity Chart
     severityChart = new Chart(document.getElementById("severityChart"), {
         type: "bar",
         data: {
             labels: Object.keys(severityCounts),
             datasets: [{
-                label: "Severity Count",
+                label: "Quantity",
                 data: Object.values(severityCounts),
-                backgroundColor: [theme.success, theme.warning, theme.danger],
-                borderWidth: 0,
-                borderRadius: 4
+                backgroundColor: [
+                    theme.danger,
+                    theme.warning,
+                    theme.accent,
+                    theme.success
+                ],
+                borderRadius: 6
             }]
         },
         options: {
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                y: { beginAtZero: true, grid: { color: theme.gridColor } },
-                x: { grid: { display: false } }
+                x: {
+                    beginAtZero: true,
+                    grid: { color: theme.gridColor },
+                    ticks: { stepSize: 1 }
+                },
+                y: { grid: { display: false } }
             },
             plugins: { legend: { display: false } }
         }
     });
 
-    // Category Chart
+    const categories = Object.keys(categoryCounts);
+
+    // We need to safely map colors for each category length
+    const bgColors = [
+        theme.primary, theme.secondary, theme.accent,
+        theme.warning, theme.danger, theme.success
+    ];
+    let doughnutColors = categories.length > 0 ? categories.map((_, i) => bgColors[i % bgColors.length]) : [theme.success];
+
     categoryChart = new Chart(document.getElementById("categoryChart"), {
         type: "doughnut",
         data: {
-            labels: Object.keys(categoryCounts),
+            labels: categories.length > 0 ? categories : ["No Issues"],
             datasets: [{
-                data: Object.values(categoryCounts),
-                backgroundColor: [theme.primary, theme.secondary, theme.accent, theme.success, theme.warning],
+                data: categories.length > 0 ? Object.values(categoryCounts) : [1],
+                backgroundColor: doughnutColors,
                 borderWidth: 0,
                 hoverOffset: 4
             }]
@@ -168,6 +242,7 @@ function renderCharts(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '70%',
             plugins: {
                 legend: { position: 'right' }
             }
@@ -175,38 +250,80 @@ function renderCharts(data) {
     });
 }
 
+
+
+// Load History
 async function loadHistory() {
-    const response = await fetch("http://localhost:8000/history");
-    const history = await response.json();
+    try {
+        const response = await fetch("http://localhost:8000/history");
+        if (!response.ok) return;
 
-    const labels = history.map(h => new Date(h.timestamp).toLocaleTimeString());
-    const scores = history.map(h => h.score);
+        const history = await response.json();
+        if (!history || history.length === 0) return;
 
-    if (historyChart) historyChart.destroy();
+        const labels = history.map(h => new Date(h.timestamp).toLocaleTimeString());
+        const scores = history.map(h => h.score);
 
-    historyChart = new Chart(document.getElementById("historyChart"), {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Risk Score",
-                data: scores,
-                borderColor: theme.primary,
-                backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: theme.bgDark,
-                pointBorderColor: theme.primary,
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, grid: { color: theme.gridColor } },
-                x: { grid: { display: false } }
+        if (historyChart) historyChart.destroy();
+
+        historyChart = new Chart(document.getElementById("historyChart"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Risk Score History",
+                    data: scores,
+                    borderColor: theme.primary,
+                    backgroundColor: 'rgba(0, 243, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: theme.secondary,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: theme.secondary
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.error("Failed to load history", e);
+    }
+}
+
+// PDF Download
+async function downloadReport() {
+    if (!window.lastScanData) {
+        alert("Please run a scan first.");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8000/generate-report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.lastScanData)
+        });
+
+        if (!response.ok) throw new Error("Failed to generate PDF");
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "RiskLens_Security_Report.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error(error);
+        alert("Failed to download PDF report. Ensure backend PDF generation is working.");
+    }
 }

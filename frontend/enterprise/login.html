@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskLens Enterprise Login</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="enterprise.css">
+</head>
+
+<body class="login-page">
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="glass-panel login-card">
+        <h2>
+            <i class="fa-solid fa-shield-virus"></i>
+            RiskLens
+            <span>ENTERPRISE SECURE UPLINK</span>
+        </h2>
+
+        <div class="login-form">
+            <div class="login-input-group">
+                <input type="email" id="email" placeholder="Administrator Email" autocomplete="email">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+
+            <div class="login-input-group">
+                <input type="password" id="password" placeholder="Access Code" autocomplete="current-password">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <div class="login-btn-container">
+                <button id="loginBtn" class="cyber-btn" onclick="login()">
+                    <span class="btn-text">AUTHORIZE LOGIN</span>
+                </button>
+            </div>
+
+            <div style="text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 0.9rem;">
+                OR
+            </div>
+
+            <div id="g_id_onload"
+                data-client_id="1076109837665-u8uhfs6s2p89hvnkf05lebm0l0fnkvmf.apps.googleusercontent.com"
+                data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black"
+                data-text="signin_with" data-size="large" data-logo_alignment="left"
+                style="display: flex; justify-content: center;">
+            </div>
+        </div>
+
+        <p id="error"></p>
+    </div>
+
+    <script src="enterprise.js"></script>
+</body>
+
+</html>

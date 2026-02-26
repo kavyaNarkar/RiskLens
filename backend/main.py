@@ -10,6 +10,15 @@ from scanner.port_scanner import scan_ports
 from scanner.risk_engine import calculate_risk
 from database import save_scan, get_history
 
+from pdf_generator import generate_pdf_report
+from fastapi.responses import FileResponse
+
+from enterprise_scanner.enterprise_routes import router as enterprise_router
+from enterprise_scanner.database_enterprise import init_enterprise_db
+
+from enterprise_scanner.scheduler import start_monitoring_loop
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -22,6 +31,12 @@ app.add_middleware(
 class URLRequest(BaseModel):
     url: str
 
+
+app.include_router(enterprise_router)
+
+init_enterprise_db()
+
+start_monitoring_loop()
 
 # -------------------------
 # URL VALIDATION
@@ -81,18 +96,27 @@ def scan_target(data: URLRequest):
     issues += check_ssl(url)
     issues += scan_ports(url)
 
-    score, level, attack_summary = calculate_risk(issues)
+    score, level, compliance_score, executive_summary = calculate_risk(issues)
+
 
     save_scan(url, score, level)
 
     return {
         "score": score,
         "level": level,
-        "issues": issues,
-        "attack_types": attack_summary
+        "compliance_score": compliance_score,
+        "executive_summary": executive_summary,
+        "issues": issues
     }
 
 
 @app.get("/history")
 def history():
     return get_history()
+
+
+@app.post("/generate-report")
+def generate_report(data: dict):
+    file_path = generate_pdf_report(data)
+    return FileResponse(file_path, media_type='application/pdf', filename="RiskLens_Report.pdf")
+

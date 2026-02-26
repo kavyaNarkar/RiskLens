@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Add Project | RiskLens Enterprise</title>
+
+    <link rel="stylesheet" href="enterprise.css">
+
+    <meta charset="UTF-8">
+
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <h2>Add Website Project</h2>
+
+        <p>
+            Paste your website URL to start enterprise monitoring.
+        </p>
+
+        <input type="text" id="domain" placeholder="https://example.com" />
+
+        <select id="frequency">
+
+            <option value="weekly">
+                Weekly Monitoring
+            </option>
+
+            <option value="daily">
+                Daily Monitoring
+            </option>
+
+        </select>
+
+        <button onclick="createProject()">
+
+            Create Project + Start Scan
+
+        </button>
+
+        <p id="error"></p>
+
+    </div>
+
+    <script src="enterprise.js"></script>
+
+</body>
+
+</html>
